@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hornfree — Engineer your first 3 seconds</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0F1115;
+    --surface: #171A21;
+    --surface-raised: #1F232C;
+    --border: #2A2E38;
+    --text: #EDEEF0;
+    --text-muted: #8B909C;
+    --text-faint: #565C69;
+    --accent: #FF5A36;
+    --accent-dim: #7A3423;
+    --good: #3DDC97;
+    --warn: #FFC857;
+  }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection{ background: var(--accent); color: #0F1115; }
+
+  a{ color: var(--accent); text-decoration: none; }
+  a:hover{ text-decoration: underline; }
+
+  .wrap{
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 24px 120px;
+  }
+
+  /* ---------- header ---------- */
+  .top-row{
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 26px;
+    color: var(--text);
+  }
+  .brand .horn{ font-size: 24px; }
+  .kicker{
+    color: var(--text-faint);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    margin-top: 4px;
+  }
+  .lang-toggle{
+    display:flex;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .lang-toggle button{
+    background: var(--surface);
+    color: var(--text-faint);
+    border: none;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 0;
+  }
+  .lang-toggle button.active{
+    background: var(--surface-raised);
+    color: var(--text);
+  }
+  header{ margin-top: 28px; margin-bottom: 48px; }
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 42px;
+    line-height: 1.15;
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+  }
+  h1 em{
+    font-style: italic;
+    color: var(--accent);
+  }
+  .sub{
+    color: var(--text-muted);
+    font-size: 18px;
+    line-height: 1.6;
+    max-width: 50ch;
+    margin: 0;
+  }
+
+  /* ---------- section shell ---------- */
+  section{
+    margin-top: 40px;
+  }
+  .section-label{
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+    display:flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  /* ---------- api key ---------- */
+  .key-row{
+    display:flex;
+    gap:10px;
+  }
+  input[type="password"], input[type="text"], textarea{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    width: 100%;
+    transition: border-color 0.15s ease;
+  }
+  input:focus, textarea:focus{
+    outline: none;
+    border-color: var(--accent);
+  }
+  .key-row button{
+    flex-shrink: 0;
+  }
+  .key-note{
+    font-size: 12.5px;
+    color: var(--text-faint);
+    margin-top: 8px;
+  }
+  .key-saved{
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+  .key-saved button{
+    background:none;
+    border:none;
+    color: var(--text-faint);
+    font-size: 13px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+  .key-saved button:hover{ color: var(--text); }
+
+  /* ---------- dropzone ---------- */
+  .drop{
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    padding: 48px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+    background: var(--surface);
+  }
+  .drop.drag{
+    border-color: var(--accent);
+    background: var(--surface-raised);
+  }
+  .drop.has-file{
+    padding: 20px 24px;
+    text-align: left;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    cursor: default;
+  }
+  .drop-icon{
+    font-size: 28px;
+    margin-bottom: 14px;
+    opacity: 0.8;
+  }
+  .drop-title{
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+  .drop-title b{ color: var(--text); font-weight: 600; }
+  .drop-sub{
+    font-size: 13px;
+    color: var(--text-faint);
+  }
+  .file-info{
+    font-size: 14px;
+  }
+  .file-info .name{ font-weight: 600; }
+  .file-info .meta{ color: var(--text-faint); font-size: 12.5px; margin-top: 2px; }
+  .file-clear{
+    background:none; border:none; color: var(--text-faint);
+    cursor:pointer; font-size: 13px; text-decoration: underline;
+  }
+  .file-clear:hover{ color: var(--text); }
+  input[type="file"]{ display:none; }
+
+  /* ---------- buttons ---------- */
+  button{
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    padding: 12px 18px;
+    transition: opacity 0.15s ease, transform 0.05s ease;
+  }
+  button:active{ transform: scale(0.98); }
+  button:disabled{ opacity: 0.4; cursor: not-allowed; }
+  .btn-primary{
+    background: var(--accent);
+    color: #0F1115;
+  }
+  .btn-primary:hover:not(:disabled){ opacity: 0.9; }
+  .btn-ghost{
+    background: var(--surface-raised);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover:not(:disabled){ background: var(--border); }
+
+  .analyze-row{
+    margin-top: 28px;
+    display:flex;
+    align-items:center;
+    gap: 16px;
+  }
+  .analyze-row button{
+    padding: 14px 26px;
+    font-size: 15px;
+  }
+  .status{
+    font-size: 13.5px;
+    color: var(--text-muted);
+  }
+  .status.error{ color: #FF7A6E; }
+
+  /* ---------- results ---------- */
+  .result{
+    margin-top: 48px;
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+  }
+  .score-block{
+    display:flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+  .score-num{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 56px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .score-num small{
+    font-size: 20px;
+    color: var(--text-faint);
+    font-weight: 500;
+  }
+  .score-verdict{
+    font-size: 15px;
+    color: var(--text);
+    max-width: 42ch;
+  }
+
+  .block-title{
+    font-size: 13px;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+    margin-top: 32px;
+  }
+  .weak-list{
+    list-style:none;
+    padding:0; margin:0;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .weak-list li{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .rewrite-card{
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .rewrite-card .tag{
+    font-size: 11.5px;
+    color: var(--good);
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 8px;
+    display:block;
+  }
+  .rewrite-card p{
+    margin: 0 0 8px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .rewrite-card .why{
+    font-size: 12.5px;
+    color: var(--text-faint);
+    margin: 0;
+  }
+
+  /* ---------- footer ---------- */
+  footer{
+    margin-top: 72px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--text-faint);
+  }
+
+  @media (max-width: 520px){
+    .wrap{ padding: 40px 18px 100px; }
+    h1{ font-size: 32px; }
+    .score-num{ font-size: 44px; }
+    .key-row{ flex-direction: column; }
+    .top-row{ align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top-row">
+    <div>
+      <div class="brand"><span class="horn">🦄</span>Hornfree</div>
+      <div class="kicker" id="kickerText"></div>
+    </div>
+    <div class="lang-toggle">
+      <button id="langEnBtn" data-lang="en">EN</button>
+      <button id="langJaBtn" data-lang="ja">JA</button>
+    </div>
+  </div>
+
+  <header>
+    <p class="sub" id="subText"></p>
+  </header>
+
+  <section id="key-section">
+    <div class="section-label">
+      <span id="keyLabel"></span>
+      <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener" id="keyLink"></a>
+    </div>
+    <div id="key-input-view">
+      <div class="key-row">
+        <input type="password" id="apiKeyInput" autocomplete="off">
+        <button class="btn-ghost" id="saveKeyBtn"></button>
+      </div>
+      <p class="key-note" id="keyNote"></p>
+    </div>
+    <div id="key-saved-view" style="display:none;">
+      <div class="key-saved">
+        <span id="keySavedText"></span>
+        <button id="clearKeyBtn"></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="upload-section">
+    <div class="section-label"><span id="uploadLabel"></span></div>
+    <div class="drop" id="dropzone">
+      <div id="drop-empty">
+        <div class="drop-icon">▶</div>
+        <div class="drop-title" id="dropTitle"></div>
+        <div class="drop-sub" id="dropSub"></div>
+      </div>
+      <div id="drop-filled" style="display:none;" class="file-info-row">
+        <div class="file-info">
+          <div class="name" id="fileName"></div>
+          <div class="meta" id="fileMeta"></div>
+        </div>
+        <button class="file-clear" id="clearFileBtn"></button>
+      </div>
+    </div>
+    <input type="file" id="fileInput" accept="video/mp4,video/quicktime,video/webm,video/x-m4v">
+  </section>
+
+  <div class="analyze-row">
+    <button class="btn-primary" id="analyzeBtn" disabled></button>
+    <span class="status" id="statusText"></span>
+  </div>
+
+  <div class="result" id="resultBlock" style="display:none;">
+    <div class="score-block">
+      <div class="score-num"><span id="scoreValue">–</span><small>/100</small></div>
+      <div class="score-verdict" id="scoreVerdict"></div>
+    </div>
+
+    <div class="block-title" id="weakTitle"></div>
+    <ul class="weak-list" id="weakList"></ul>
+
+    <div class="block-title" id="rewriteTitle"></div>
+    <div id="rewriteList"></div>
+  </div>
+
+  <footer id="footerText"></footer>
+
+</div>
+
+<script>
+(function(){
+  const $ = (id) => document.getElementById(id);
+
+  const STORAGE_KEY = 'hornfree_gemini_key';
+  const LANG_KEY = 'hornfree_lang';
+  const MODEL = 'gemini-2.5-flash';
+  const MAX_BYTES = 85 * 1024 * 1024;
+
+  const STR = {
+    en: {
+      kicker: "Free hook analysis, powered by your own API key",
+      sub: "Upload a video and AI analyzes your hook and structure. You get a score, the specific weak points, and rewritten opening lines. Nothing touches a server — your browser talks directly to Gemini.",
+      keyLabel: "1. Gemini API key", keyLink: "Get a free key ↗",
+      apiPlaceholder: "Paste your AIzaSy... key",
+      saveKey: "Save",
+      keyNote: "Stored only in this browser (localStorage). Never sent or shared anywhere else.",
+      keySavedText: "API key saved ●●●●●●●●", clearKey: "Remove",
+      uploadLabel: "2. Upload your video",
+      dropTitleHtml: "Drag & drop a video, or <b>click to browse</b>",
+      dropSub: "MP4 / MOV / WebM · roughly 80MB max (long, high-res clips may exceed this)",
+      clearFile: "Change",
+      analyze: "Analyze",
+      weakTitle: "What's holding it back",
+      rewriteTitle: "Rewrites",
+      footer: "Hornfree v1 — your video is only used for this analysis and never stored anywhere but your device. Results are a guide, not a guarantee.",
+      loadingFile: "Reading video...",
+      loadingApi: "Gemini is analyzing... (can take up to 30s for longer clips)",
+      done: "Done",
+      errorPrefix: "Error: ",
+      needVideo: "Please choose a video file.",
+      badResponse: "Unexpected response format.",
+      sizeWarn: "· large files may fail",
+      systemPromptLangLine: "Write every piece of output text in English."
+    },
+    ja: {
+      kicker: "あなたのAPIキーで動く、完全無料のフック分析",
+      sub: "動画ファイルをアップロードするだけで、AIが冒頭のフックと全体の構成を分析。弱点と、具体的な書き直し案を返します。サーバーには何も送信されません — すべてあなたのブラウザからGeminiへ直接。",
+      keyLabel: "1. Gemini APIキー", keyLink: "無料キーを取得 ↗",
+      apiPlaceholder: "AIzaSy... を貼り付け",
+      saveKey: "保存",
+      keyNote: "このブラウザ内(localStorage)にのみ保存されます。どこにも送信・共有されません。",
+      keySavedText: "APIキーを保存済み ●●●●●●●●", clearKey: "削除",
+      uploadLabel: "2. 動画をアップロード",
+      dropTitleHtml: "動画ファイルをドラッグ&ドロップ、または<b>クリックして選択</b>",
+      dropSub: "MP4 / MOV / WebM ・ 目安80MBまで(長め・高画質だと超えることがあります)",
+      clearFile: "変更する",
+      analyze: "分析する",
+      weakTitle: "気になった点",
+      rewriteTitle: "書き直し案",
+      footer: "Hornfree v1 — 動画はGeminiの解析時にのみ使用され、あなたの端末以外には保存されません。分析結果は目安であり、内容の正確性を保証するものではありません。",
+      loadingFile: "動画を読み込み中...",
+      loadingApi: "Geminiが分析中... (動画の長さによっては30秒ほどかかります)",
+      done: "完了",
+      errorPrefix: "エラー: ",
+      needVideo: "動画ファイルを選んでください。",
+      badResponse: "レスポンスの形式が想定と異なりました。",
+      sizeWarn: "・大きいファイルは失敗する場合があります",
+      systemPromptLangLine: "出力はすべて日本語で書くこと。"
+    }
+  };
+
+  let lang = localStorage.getItem(LANG_KEY) || 'en';
+  let selectedFile = null;
+
+  function applyLang(){
+    const s = STR[lang];
+    $('kickerText').textContent = s.kicker;
+    $('subText').textContent = s.sub;
+    $('keyLabel').textContent = s.keyLabel;
+    $('keyLink').textContent = s.keyLink;
+    $('apiKeyInput').placeholder = s.apiPlaceholder;
+    $('saveKeyBtn').textContent = s.saveKey;
+    $('keyNote').textContent = s.keyNote;
+    $('keySavedText').textContent = s.keySavedText;
+    $('clearKeyBtn').textContent = s.clearKey;
+    $('uploadLabel').textContent = s.uploadLabel;
+    $('dropTitle').innerHTML = s.dropTitleHtml;
+    $('dropSub').textContent = s.dropSub;
+    $('clearFileBtn').textContent = s.clearFile;
+    $('analyzeBtn').textContent = s.analyze;
+    $('weakTitle').textContent = s.weakTitle;
+    $('rewriteTitle').textContent = s.rewriteTitle;
+    $('footerText').textContent = s.footer;
+    document.documentElement.lang = lang;
+    document.title = lang === 'ja' ? 'Hornfree — 冒頭3秒を科学する' : 'Hornfree — Engineer your first 3 seconds';
+
+    $('langEnBtn').classList.toggle('active', lang === 'en');
+    $('langJaBtn').classList.toggle('active', lang === 'ja');
+
+    if(selectedFile){
+      $('fileMeta').textContent = humanSize(selectedFile.size) + (selectedFile.size > MAX_BYTES ? s.sizeWarn : '');
+    }
+  }
+
+  $('langEnBtn').addEventListener('click', () => { lang = 'en'; localStorage.setItem(LANG_KEY, lang); applyLang(); });
+  $('langJaBtn').addEventListener('click', () => { lang = 'ja'; localStorage.setItem(LANG_KEY, lang); applyLang(); });
+
+  const apiKeyInput = $('apiKeyInput');
+  const saveKeyBtn = $('saveKeyBtn');
+  const clearKeyBtn = $('clearKeyBtn');
+  const keyInputView = $('key-input-view');
+  const keySavedView = $('key-saved-view');
+
+  const dropzone = $('dropzone');
+  const dropEmpty = $('drop-empty');
+  const dropFilled = $('drop-filled');
+  const fileInput = $('fileInput');
+  const fileNameEl = $('fileName');
+  const fileMetaEl = $('fileMeta');
+  const clearFileBtn = $('clearFileBtn');
+
+  const analyzeBtn = $('analyzeBtn');
+  const statusText = $('statusText');
+  const resultBlock = $('resultBlock');
+  const scoreValue = $('scoreValue');
+  const scoreVerdict = $('scoreVerdict');
+  const weakList = $('weakList');
+  const rewriteList = $('rewriteList');
+
+  function refreshKeyView(){
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if(saved){
+      keyInputView.style.display = 'none';
+      keySavedView.style.display = 'block';
+    } else {
+      keyInputView.style.display = 'block';
+      keySavedView.style.display = 'none';
+    }
+    updateAnalyzeState();
+  }
+
+  saveKeyBtn.addEventListener('click', () => {
+    const val = apiKeyInput.value.trim();
+    if(!val) return;
+    localStorage.setItem(STORAGE_KEY, val);
+    apiKeyInput.value = '';
+    refreshKeyView();
+  });
+
+  clearKeyBtn.addEventListener('click', () => {
+    localStorage.removeItem(STORAGE_KEY);
+    refreshKeyView();
+  });
+
+  function humanSize(bytes){
+    const mb = bytes / (1024*1024);
+    return mb >= 1 ? mb.toFixed(1) + ' MB' : (bytes/1024).toFixed(0) + ' KB';
+  }
+
+  function setFile(file){
+    if(!file) return;
+    if(!file.type.startsWith('video/')){
+      statusText.textContent = STR[lang].needVideo;
+      statusText.classList.add('error');
+      return;
+    }
+    selectedFile = file;
+    fileNameEl.textContent = file.name;
+    fileMetaEl.textContent = humanSize(file.size) + (file.size > MAX_BYTES ? STR[lang].sizeWarn : '');
+    dropEmpty.style.display = 'none';
+    dropFilled.style.display = 'flex';
+    dropzone.classList.add('has-file');
+    statusText.textContent = '';
+    statusText.classList.remove('error');
+    updateAnalyzeState();
+  }
+
+  function clearFile(){
+    selectedFile = null;
+    fileInput.value = '';
+    dropEmpty.style.display = 'block';
+    dropFilled.style.display = 'none';
+    dropzone.classList.remove('has-file');
+    updateAnalyzeState();
+  }
+
+  dropzone.addEventListener('click', () => { if(!selectedFile) fileInput.click(); });
+  fileInput.addEventListener('change', (e) => setFile(e.target.files[0]));
+  clearFileBtn.addEventListener('click', (e) => { e.stopPropagation(); clearFile(); });
+
+  ['dragenter','dragover'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      if(!selectedFile) dropzone.classList.add('drag');
+    });
+  });
+  ['dragleave','drop'].forEach(evt => {
+    dropzone.addEventListener(evt, (e) => {
+      e.preventDefault(); e.stopPropagation();
+      dropzone.classList.remove('drag');
+    });
+  });
+  dropzone.addEventListener('drop', (e) => {
+    if(selectedFile) return;
+    const file = e.dataTransfer.files[0];
+    setFile(file);
+  });
+
+  function updateAnalyzeState(){
+    const hasKey = !!localStorage.getItem(STORAGE_KEY);
+    analyzeBtn.disabled = !(hasKey && selectedFile);
+  }
+
+  function fileToBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const RESPONSE_SCHEMA = {
+    type: "OBJECT",
+    properties: {
+      score: { type: "INTEGER" },
+      verdict: { type: "STRING" },
+      weaknesses: { type: "ARRAY", items: { type: "STRING" } },
+      rewrites: {
+        type: "ARRAY",
+        items: {
+          type: "OBJECT",
+          properties: {
+            approach: { type: "STRING" },
+            script: { type: "STRING" },
+            why: { type: "STRING" }
+          },
+          required: ["approach","script","why"]
+        }
+      }
+    },
+    required: ["score","verdict","weaknesses","rewrites"]
+  };
+
+  function buildSystemPrompt(){
+    return `You are a professional short-form video director and retention data analyst, specialized in analyzing hooks for Instagram Reels, TikTok, and YouTube Shorts.
+Evaluate the first 3-6 seconds (the hook) and the overall structure of the uploaded video.
+
+Judge against:
+- Whether a clear "reason to keep watching" is shown visually or verbally within the first second
+- Whether there's an open loop (missing information that creates curiosity)
+- Whether pacing, cuts, and on-screen text prevent drop-off
+- Whether the video gives away its punchline or best moment too early, killing the pull toward the rest
+
+${STR[lang].systemPromptLangLine}
+Follow the provided JSON schema exactly.
+- score: hook strength from 0-100. Be harsh — reserve 80+ for genuinely strong hooks.
+- verdict: one short sentence summarizing the score
+- weaknesses: 2-4 specific weaknesses grounded in what actually happens in this video (no generic advice)
+- rewrites: 2-3 alternative hook openings, each with approach (a short name for the angle, e.g. "Question opener"), script (the actual line/on-screen text to use), and why (why it works)`;
+  }
+
+  async function analyze(){
+    const apiKey = localStorage.getItem(STORAGE_KEY);
+    if(!apiKey || !selectedFile) return;
+
+    analyzeBtn.disabled = true;
+    resultBlock.style.display = 'none';
+    statusText.classList.remove('error');
+    statusText.textContent = STR[lang].loadingFile;
+
+    try{
+      const base64 = await fileToBase64(selectedFile);
+      statusText.textContent = STR[lang].loadingApi;
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent?key=${encodeURIComponent(apiKey)}`;
+      const body = {
+        contents: [{
+          parts: [
+            { inline_data: { mime_type: selectedFile.type || 'video/mp4', data: base64 } },
+            { text: "Analyze this video's hook and structure." }
+          ]
+        }],
+        systemInstruction: { parts: [{ text: buildSystemPrompt() }] },
+        generationConfig: {
+          responseMimeType: "application/json",
+          responseSchema: RESPONSE_SCHEMA
+        }
+      };
+
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+
+      if(!res.ok){
+        const errBody = await res.text();
+        throw new Error(`API error ${res.status}: ${errBody.slice(0,300)}`);
+      }
+
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      if(!text) throw new Error(STR[lang].badResponse);
+
+      const parsed = JSON.parse(text);
+      renderResult(parsed);
+      statusText.textContent = STR[lang].done;
+
+    } catch(err){
+      console.error(err);
+      statusText.textContent = STR[lang].errorPrefix + err.message;
+      statusText.classList.add('error');
+    } finally {
+      analyzeBtn.disabled = false;
+    }
+  }
+
+  function renderResult(r){
+    scoreValue.textContent = r.score;
+    scoreVerdict.textContent = r.verdict || '';
+
+    weakList.innerHTML = '';
+    (r.weaknesses || []).forEach(w => {
+      const li = document.createElement('li');
+      li.textContent = w;
+      weakList.appendChild(li);
+    });
+
+    rewriteList.innerHTML = '';
+    (r.rewrites || []).forEach(rw => {
+      const card = document.createElement('div');
+      card.className = 'rewrite-card';
+      card.innerHTML = `
+        <span class="tag">${escapeHtml(rw.approach || '')}</span>
+        <p>${escapeHtml(rw.script || '')}</p>
+        <p class="why">${escapeHtml(rw.why || '')}</p>
+      `;
+      rewriteList.appendChild(card);
+    });
+
+    resultBlock.style.display = 'block';
+  }
+
+  function escapeHtml(s){
+    const div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+
+  analyzeBtn.addEventListener('click', analyze);
+
+  applyLang();
+  refreshKeyView();
+})();
+</script>
+</body>
+</html>
